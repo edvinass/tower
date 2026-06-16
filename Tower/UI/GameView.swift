@@ -70,6 +70,7 @@ struct GameView: View {
                 GameOverlayView(
                     state: session.state,
                     levelName: level.name,
+                    totalBlocks: level.blockSpecs.count,
                     onPause: {
                         showPause = true
                         sceneController?.pause()

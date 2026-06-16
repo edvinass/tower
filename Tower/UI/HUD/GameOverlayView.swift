@@ -3,6 +3,7 @@ import SwiftUI
 struct GameOverlayView: View {
     let state: GameSessionState
     let levelName: String
+    let totalBlocks: Int
     let onPause: () -> Void
     let onResume: () -> Void
     let onRetry: () -> Void
@@ -33,7 +34,7 @@ struct GameOverlayView: View {
                 Text(levelName)
                     .font(.headline)
                     .foregroundStyle(.white)
-                Text("Blocks \(state.blocksPlaced)/\(state.maxBlocks)")
+                Text("Blocks \(state.blocksPlaced)/\(totalBlocks)")
                     .font(.caption)
                     .foregroundStyle(.white.opacity(0.8))
             }
