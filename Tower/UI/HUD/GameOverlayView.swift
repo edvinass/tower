@@ -16,16 +16,17 @@ struct GameOverlayView: View {
     }
 
     var body: some View {
-        Group {
+        ZStack {
             if showsModal {
                 modalContent
+            } else {
+                VStack(spacing: 0) {
+                    levelInfoBar
+                    Spacer(minLength: 0)
+                }
             }
         }
-        .overlay(alignment: .top) {
-            if !showsModal {
-                levelInfoBar
-            }
-        }
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
     }
 
     private var levelInfoBar: some View {
@@ -84,7 +85,9 @@ struct GameOverlayView: View {
     @ViewBuilder
     private func overlayCard(title: String, message: String, @ViewBuilder actions: () -> some View) -> some View {
         ZStack {
-            Color.black.opacity(0.45).ignoresSafeArea()
+            Color.black.opacity(0.45)
+                .ignoresSafeArea()
+                .contentShape(Rectangle())
             VStack(spacing: 16) {
                 Text(title)
                     .font(.title.bold())

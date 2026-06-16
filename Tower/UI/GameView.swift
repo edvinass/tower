@@ -17,6 +17,10 @@ struct GameView: View {
         _session = StateObject(wrappedValue: GameSession(level: level))
     }
 
+    private var isPlaying: Bool {
+        session.state.phase == .playing && !showPause
+    }
+
     var body: some View {
         GeometryReader { geo in
             ZStack {
@@ -31,7 +35,7 @@ struct GameView: View {
                 )
                 .ignoresSafeArea()
 
-                PlacementPanOverlay(isEnabled: session.state.phase == .playing) { point, state in
+                PlacementPanOverlay(isEnabled: isPlaying) { point, state in
                     handlePan(at: point, state: state)
                 }
                 .ignoresSafeArea()
@@ -46,7 +50,23 @@ struct GameView: View {
                     .ignoresSafeArea()
                     .allowsHitTesting(false)
                 }
-
+            }
+            .frame(width: geo.size.width, height: geo.size.height)
+            .overlay(alignment: .top) { topHUD }
+            .overlay(alignment: .bottom) { bottomQueue }
+            .overlay(alignment: .trailing) {
+                if sizeClass == .regular { sideHUD }
+            }
+            #if targetEnvironment(simulator) || DEBUG
+            .overlay(alignment: .bottomLeading) {
+                if isPlaying {
+                    DebugControlsView(gravity: gravityController)
+                        .padding(.leading, 8)
+                        .padding(.bottom, 100)
+                }
+            }
+            #endif
+            .overlay {
                 GameOverlayView(
                     state: session.state,
                     levelName: level.name,
@@ -62,13 +82,7 @@ struct GameView: View {
                         sceneController?.retry()
                         showPause = false
                     },
-                    onNext: {
-                        if let next = LevelLoader.shared.level(withId: level.levelId + 1) {
-                            appModel.playLevel(next)
-                        } else {
-                            appModel.showLevelSelect()
-                        }
-                    },
+                    onNext: goToNextLevel,
                     onMenu: {
                         appModel.showLevelSelect()
                     },
@@ -76,22 +90,6 @@ struct GameView: View {
                     gravityController: gravityController
                 )
             }
-            .overlay(alignment: .top) { topHUD.allowsHitTesting(true) }
-            .overlay(alignment: .bottom) {
-                bottomQueue.allowsHitTesting(true)
-            }
-            .overlay(alignment: .trailing) {
-                if sizeClass == .regular { sideHUD.allowsHitTesting(true) }
-            }
-            #if targetEnvironment(simulator) || DEBUG
-            .overlay(alignment: .bottomLeading) {
-                if session.state.phase == .playing {
-                    DebugControlsView(gravity: gravityController)
-                        .padding(.leading, 8)
-                        .padding(.bottom, 100)
-                }
-            }
-            #endif
         }
         .onAppear {
             gravityController.tiltSensitivity = level.tiltSensitivity
@@ -103,8 +101,17 @@ struct GameView: View {
         }
     }
 
+    private func goToNextLevel() {
+        showPause = false
+        if let next = LevelLoader.shared.level(withId: level.levelId + 1) {
+            appModel.playLevel(next)
+        } else {
+            appModel.showLevelSelect()
+        }
+    }
+
     private var topHUD: some View {
-        HStack(alignment: .top) {
+        HStack(alignment: .top, spacing: 0) {
             HeightMeterView(
                 current: session.state.currentHeight,
                 target: session.state.targetHeight,
@@ -132,6 +139,8 @@ struct GameView: View {
                 .padding(.top, 8)
             }
         }
+        .frame(maxWidth: .infinity, alignment: .top)
+        .allowsHitTesting(isPlaying)
     }
 
     private var sideHUD: some View {
@@ -147,6 +156,7 @@ struct GameView: View {
         }
         .padding(.trailing, 16)
         .padding(.top, 24)
+        .allowsHitTesting(isPlaying)
     }
 
     private var rotateButton: some View {
@@ -182,10 +192,11 @@ struct GameView: View {
         .padding(.horizontal, sizeClass == .regular ? 24 : 8)
         .padding(.bottom, sizeClass == .regular ? 24 : 12)
         .id(session.state.queueIndex)
+        .allowsHitTesting(isPlaying)
     }
 
     private func handlePan(at globalPoint: CGPoint, state: UIGestureRecognizer.State) {
-        guard session.state.phase == .playing else { return }
+        guard isPlaying else { return }
         let scenePoint = convertToScene(globalPoint)
 
         switch state {

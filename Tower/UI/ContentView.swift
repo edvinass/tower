@@ -12,6 +12,7 @@ struct ContentView: View {
                 LevelSelectView()
             case .game(let level):
                 GameView(level: level)
+                    .id(level.levelId)
             }
         }
         .animation(.easeInOut(duration: 0.25), value: appModel.screen)

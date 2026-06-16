@@ -1,7 +1,9 @@
 import Foundation
+import SpriteKit
 
 struct HeightTracker {
-    let targetHeight: CGFloat
+    let platformTopY: CGFloat
+    let targetHeightAbovePlatform: CGFloat
     let holdDuration: TimeInterval
     let failLineY: CGFloat
 
@@ -11,8 +13,18 @@ struct HeightTracker {
     private(set) var belowTargetSince: TimeInterval?
     private var lastUpdateTime: TimeInterval?
 
-    init(targetHeight: CGFloat, holdDuration: TimeInterval, failLineY: CGFloat) {
-        self.targetHeight = targetHeight
+    private var targetAbsoluteY: CGFloat {
+        platformTopY + targetHeightAbovePlatform
+    }
+
+    init(
+        platformTopY: CGFloat,
+        targetHeightAbovePlatform: CGFloat,
+        holdDuration: TimeInterval,
+        failLineY: CGFloat
+    ) {
+        self.platformTopY = platformTopY
+        self.targetHeightAbovePlatform = targetHeightAbovePlatform
         self.holdDuration = holdDuration
         self.failLineY = failLineY
     }
@@ -36,9 +48,10 @@ struct HeightTracker {
             return .inProgress
         }
 
-        currentHeight = blocks.map { $0.calculateAccumulatedFrame().maxY }.max() ?? 0
+        let towerTopY = measureTowerTop(from: blocks)
+        currentHeight = max(0, towerTopY - platformTopY)
 
-        if currentHeight >= targetHeight {
+        if towerTopY >= targetAbsoluteY {
             reachedTarget = true
             belowTargetSince = nil
             holdProgress += delta
@@ -59,6 +72,21 @@ struct HeightTracker {
         }
 
         return .inProgress
+    }
+
+    /// Ignore blocks that fell off or are flying upward from a bounce.
+    private func measureTowerTop(from blocks: [BlockNode]) -> CGFloat {
+        let contributing = blocks.filter { contributesToTowerHeight($0) }
+        let source = contributing.isEmpty ? blocks : contributing
+        return source.map { $0.calculateAccumulatedFrame().maxY }.max() ?? platformTopY
+    }
+
+    private func contributesToTowerHeight(_ block: BlockNode) -> Bool {
+        let frame = block.calculateAccumulatedFrame()
+        guard frame.minY > platformTopY - 20 else { return false }
+        guard let body = block.physicsBody else { return true }
+        let speed = hypot(body.velocity.dx, body.velocity.dy)
+        return speed < 120
     }
 
     func blockFailed(_ block: BlockNode, platform: PlatformNode) -> Bool {

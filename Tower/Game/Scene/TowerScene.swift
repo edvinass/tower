@@ -23,7 +23,12 @@ final class TowerScene: SKScene, TowerSceneProtocol {
     private var placedBlocks: [BlockNode] = []
     private var ghostBlock: BlockNode?
     private var windSystem: WindSystem!
-    private var heightTracker = HeightTracker(targetHeight: 10, holdDuration: 2, failLineY: -100)
+    private var heightTracker = HeightTracker(
+        platformTopY: 0,
+        targetHeightAbovePlatform: 10,
+        holdDuration: 2,
+        failLineY: -100
+    )
     private var gravityController = GravityController()
     private var windEmitter: SKEmitterNode!
     private var confettiEmitter: SKEmitterNode?
@@ -50,7 +55,8 @@ final class TowerScene: SKScene, TowerSceneProtocol {
         self.gravityController.tiltSensitivity = level.tiltSensitivity
         self.windSystem = WindSystem(config: level.wind)
         self.heightTracker = HeightTracker(
-            targetHeight: CGFloat(level.targetHeight),
+            platformTopY: 0,
+            targetHeightAbovePlatform: CGFloat(level.targetHeight),
             holdDuration: level.holdDuration,
             failLineY: -200
         )
@@ -92,7 +98,8 @@ final class TowerScene: SKScene, TowerSceneProtocol {
         wobbleContainer.addChild(platform)
 
         heightTracker = HeightTracker(
-            targetHeight: CGFloat(level.targetHeight),
+            platformTopY: platform.topY,
+            targetHeightAbovePlatform: CGFloat(level.targetHeight),
             holdDuration: level.holdDuration,
             failLineY: platform.failLineY
         )
@@ -419,7 +426,7 @@ final class TowerScene: SKScene, TowerSceneProtocol {
             ],
             times: [0, 0.33, 0.66, 1]
         )
-        emitter.position = CGPoint(x: cameraNode.position.x, y: heightTracker.currentHeight)
+        emitter.position = CGPoint(x: cameraNode.position.x, y: platform.topY + heightTracker.currentHeight)
         emitter.zPosition = 100
         addChild(emitter)
         confettiEmitter = emitter
@@ -434,7 +441,7 @@ final class TowerScene: SKScene, TowerSceneProtocol {
 
         let state = GameSessionState(
             phase: phase,
-            currentHeight: Double(heightTracker.currentHeight - platform.topY).rounded(),
+            currentHeight: Double(heightTracker.currentHeight).rounded(),
             targetHeight: level.targetHeight,
             holdProgress: (heightTracker.holdProgress / level.holdDuration * 20).rounded() / 20,
             holdDuration: level.holdDuration,
