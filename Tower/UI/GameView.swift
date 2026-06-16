@@ -184,6 +184,7 @@ struct GameView: View {
             blocks: session.visibleQueue,
             queueBaseIndex: session.state.queueIndex,
             selectedOffset: session.state.selectedQueueOffset,
+            rotationSteps: session.state.rotationSteps,
             onSelect: { offset in
                 (sceneController as? TowerScene)?.selectQueueOffset(offset)
             }

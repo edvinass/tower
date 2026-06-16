@@ -5,6 +5,7 @@ enum GamePhase: Equatable {
     case paused
     case won(stars: Int)
     case failed
+    case outOfBlocks
 }
 
 struct GameSessionState: Equatable {

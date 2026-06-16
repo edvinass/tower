@@ -22,6 +22,7 @@ final class TowerScene: SKScene, TowerSceneProtocol {
     private var wobbleContainer: SKNode!
     private var placedBlocks: [BlockNode] = []
     private var ghostBlock: BlockNode?
+    private var lastGhostPosition: CGPoint?
     private var windSystem: WindSystem!
     private var heightTracker = HeightTracker(
         platformTopY: 0,
@@ -46,6 +47,8 @@ final class TowerScene: SKScene, TowerSceneProtocol {
     private var nearFail = false
     private var lastHUDPublishTime: TimeInterval = 0
     private let hudPublishInterval: TimeInterval = 0.12
+    private var earnedStars = 0
+    private var outOfBlocksSince: TimeInterval?
 
     private let placementCooldown: TimeInterval = 0.05
 
@@ -66,10 +69,13 @@ final class TowerScene: SKScene, TowerSceneProtocol {
         blocksPlaced = 0
         anyBlockCrossedFailLine = false
         gameEnded = false
+        earnedStars = 0
+        outOfBlocksSince = nil
         gamePaused = false
         placedBlocks.removeAll()
         ghostBlock?.removeFromParent()
         ghostBlock = nil
+        lastGhostPosition = nil
     }
 
     override func didMove(to view: SKView) {
@@ -174,10 +180,43 @@ final class TowerScene: SKScene, TowerSceneProtocol {
         updateWobble()
         checkFailures()
         evaluateHeight(at: currentTime)
+        checkOutOfBlocks(at: currentTime)
         publishHUDIfNeeded(at: currentTime)
     }
 
+    private var isOutOfBlocks: Bool {
+        blocksPlaced >= level.maxBlocks || queueIndex >= level.blockSpecs.count
+    }
+
+    private func blocksAreSettled() -> Bool {
+        !placedBlocks.isEmpty && placedBlocks.allSatisfy { $0.physicsBody?.isResting == true }
+    }
+
+    private func checkOutOfBlocks(at time: TimeInterval) {
+        guard isOutOfBlocks else {
+            outOfBlocksSince = nil
+            return
+        }
+
+        if heightTracker.currentHeight >= CGFloat(level.targetHeight) {
+            outOfBlocksSince = nil
+            return
+        }
+
+        if outOfBlocksSince == nil {
+            outOfBlocksSince = time
+        }
+        guard let started = outOfBlocksSince else { return }
+
+        let waited = time - started
+        let settled = blocksAreSettled()
+        guard waited >= 0.8, settled || waited >= 4 else { return }
+
+        triggerOutOfBlocks()
+    }
+
     private func publishHUDIfNeeded(at time: TimeInterval) {
+        guard !gameEnded else { return }
         guard time - lastHUDPublishTime >= hudPublishInterval else { return }
         lastHUDPublishTime = time
         publishState()
@@ -262,14 +301,7 @@ final class TowerScene: SKScene, TowerSceneProtocol {
     func rotatePendingBlock() {
         guard !gameEnded else { return }
         rotationSteps = (rotationSteps + 1) % 4
-        if let ghost = ghostBlock {
-            let spec = ghost.spec
-            let pos = ghost.position
-            ghost.removeFromParent()
-            ghostBlock = BlockNode.make(spec: spec, rotationSteps: rotationSteps, isGhost: true)
-            ghostBlock?.position = pos
-            if let ghostBlock { wobbleContainer.addChild(ghostBlock) }
-        }
+        updateGhost(at: ghostBlock?.position ?? lastGhostPosition)
         publishState()
     }
 
@@ -287,6 +319,7 @@ final class TowerScene: SKScene, TowerSceneProtocol {
         }
 
         if let scenePoint {
+            lastGhostPosition = scenePoint
             ghostBlock?.position = scenePoint
             let valid = isValidPlacement(for: ghostBlock)
             ghostBlock?.fillColor = valid ? spec.material.fillColor.withAlphaComponent(0.55) : SKColor.red.withAlphaComponent(0.45)
@@ -318,6 +351,7 @@ final class TowerScene: SKScene, TowerSceneProtocol {
 
         ghostBlock?.removeFromParent()
         ghostBlock = nil
+        lastGhostPosition = nil
 
         HapticsManager.shared.blockPlaced()
         AudioManager.shared.playImpact(for: spec.material)
@@ -387,10 +421,21 @@ final class TowerScene: SKScene, TowerSceneProtocol {
         if blocksPlaced <= level.parBlocks { stars += 1 }
         if !anyBlockCrossedFailLine { stars += 1 }
 
+        earnedStars = stars
         HapticsManager.shared.levelComplete()
         AudioManager.shared.playWin()
         gameDelegate?.sceneDidWin(stars: stars)
         publishState(stars: stars)
+    }
+
+    private func triggerOutOfBlocks() {
+        guard !gameEnded else { return }
+        gameEnded = true
+        physicsWorld.speed = 0
+        gravityController.stop()
+        HapticsManager.shared.levelFailed()
+        gameDelegate?.sceneDidRunOutOfBlocks()
+        publishState(outOfBlocks: true)
     }
 
     private func triggerFail() {
@@ -434,10 +479,12 @@ final class TowerScene: SKScene, TowerSceneProtocol {
         run(.wait(forDuration: 3)) { emitter.removeFromParent() }
     }
 
-    private func publishState(stars: Int = 0, failed: Bool = false) {
+    private func publishState(stars: Int = 0, failed: Bool = false, outOfBlocks: Bool = false) {
+        let resolvedStars = stars > 0 ? stars : earnedStars
         var phase: GamePhase = .playing
         if failed { phase = .failed }
-        else if stars > 0 { phase = .won(stars: stars) }
+        else if outOfBlocks { phase = .outOfBlocks }
+        else if resolvedStars > 0 { phase = .won(stars: resolvedStars) }
         else if gamePaused { phase = .paused }
 
         let state = GameSessionState(
@@ -456,7 +503,7 @@ final class TowerScene: SKScene, TowerSceneProtocol {
             selectedQueueOffset: selectedQueueOffset,
             anyBlockCrossedFailLine: anyBlockCrossedFailLine,
             nearFail: nearFail,
-            starsEarned: stars
+            starsEarned: resolvedStars
         )
         gameDelegate?.sceneDidUpdateState(state)
     }
@@ -467,6 +514,7 @@ final class TowerScene: SKScene, TowerSceneProtocol {
         rotationSteps = 0
         ghostBlock?.removeFromParent()
         ghostBlock = nil
+        lastGhostPosition = nil
         publishState()
     }
 }

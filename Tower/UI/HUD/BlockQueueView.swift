@@ -4,6 +4,7 @@ struct BlockQueueView: View {
     let blocks: [BlockSpec]
     let queueBaseIndex: Int
     let selectedOffset: Int
+    let rotationSteps: Int
     let onSelect: (Int) -> Void
 
     var body: some View {
@@ -26,7 +27,10 @@ struct BlockQueueView: View {
 
     private func queueItem(index: Int, spec: BlockSpec) -> some View {
         let isSelected = index == selectedOffset
-        return BlockPreview(spec: spec)
+        return BlockPreview(
+            spec: spec,
+            rotationSteps: isSelected ? rotationSteps : 0
+        )
             .frame(width: 64, height: 64)
             .background(
                 RoundedRectangle(cornerRadius: 12)
@@ -45,13 +49,17 @@ struct BlockQueueView: View {
 
 private struct BlockPreview: View {
     let spec: BlockSpec
+    var rotationSteps: Int = 0
 
     var body: some View {
         Canvas { context, size in
             let rect = CGRect(origin: .zero, size: size).insetBy(dx: 8, dy: 8)
             let shapeSize = spec.shape.unitSize
             let scale = min(rect.width / shapeSize.width, rect.height / shapeSize.height) * 0.85
-            let path = spec.shape.path(size: CGSize(width: shapeSize.width * scale, height: shapeSize.height * scale))
+            let path = spec.shape.path(
+                size: CGSize(width: shapeSize.width * scale, height: shapeSize.height * scale),
+                rotationSteps: rotationSteps
+            )
             var transform = CGAffineTransform(translationX: size.width / 2, y: size.height / 2)
             if let transformed = path.copy(using: &transform) {
                 context.fill(Path(transformed), with: .color(spec.material.swiftUIColor))

@@ -65,6 +65,12 @@ struct SpriteKitView: UIViewRepresentable {
             session.updateFromScene(state)
         }
 
+        func sceneDidRunOutOfBlocks() {
+            var state = session.state
+            state.phase = .outOfBlocks
+            session.updateFromScene(state)
+        }
+
         func sceneDidWarnGust() {}
 
         func sceneDidNearFail(_ near: Bool) {

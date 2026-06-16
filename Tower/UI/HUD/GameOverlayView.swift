@@ -20,10 +20,8 @@ struct GameOverlayView: View {
             if showsModal {
                 modalContent
             } else {
-                VStack(spacing: 0) {
-                    levelInfoBar
-                    Spacer(minLength: 0)
-                }
+                levelInfoBar
+                    .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
             }
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
@@ -75,6 +73,12 @@ struct GameOverlayView: View {
             }
         } else if case .failed = state.phase {
             overlayCard(title: "Tower Fell", message: "Try a wider base or grippy rubber.") {
+                Button("Retry", action: onRetry)
+                    .buttonStyle(.borderedProminent)
+                Button("Levels", action: onMenu)
+            }
+        } else if case .outOfBlocks = state.phase {
+            overlayCard(title: "Out of Blocks", message: "You used every block before reaching the target.") {
                 Button("Retry", action: onRetry)
                     .buttonStyle(.borderedProminent)
                 Button("Levels", action: onMenu)

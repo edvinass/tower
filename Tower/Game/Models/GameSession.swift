@@ -7,6 +7,7 @@ protocol TowerSceneDelegate: AnyObject {
     func sceneDidPlaceBlock()
     func sceneDidWin(stars: Int)
     func sceneDidFail()
+    func sceneDidRunOutOfBlocks()
     func sceneDidWarnGust()
     func sceneDidNearFail(_ near: Bool)
 }
