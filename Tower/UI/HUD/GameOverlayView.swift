@@ -11,36 +11,61 @@ struct GameOverlayView: View {
     @Binding var isPausePresented: Bool
     var gravityController: GravityController?
 
+    private var showsModal: Bool {
+        isPausePresented || state.phase != .playing
+    }
+
     var body: some View {
-        VStack {
-            HStack {
-                VStack(alignment: .leading, spacing: 2) {
-                    Text(levelName)
-                        .font(.headline)
-                        .foregroundStyle(.white)
-                    Text("Blocks \(state.blocksPlaced)/\(state.maxBlocks)")
-                        .font(.caption)
-                        .foregroundStyle(.white.opacity(0.8))
-                }
-                .padding(10)
-                .background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: 10))
-
-                Spacer()
-
-                if state.phase == .playing {
-                    Button(action: onPause) {
-                        Image(systemName: "pause.fill")
-                            .padding(12)
-                            .background(.ultraThinMaterial, in: Circle())
-                    }
-                }
+        Group {
+            if showsModal {
+                modalContent
             }
-            .padding(.horizontal, 12)
-            .padding(.top, 8)
+        }
+        .overlay(alignment: .top) {
+            if !showsModal {
+                levelInfoBar
+            }
+        }
+        .overlay(alignment: .bottomLeading) {
+            #if targetEnvironment(simulator) || DEBUG
+            if let gravityController, !showsModal {
+                DebugControlsView(gravity: gravityController)
+                    .padding(.leading, 8)
+                    .padding(.bottom, 100)
+            }
+            #endif
+        }
+    }
+
+    private var levelInfoBar: some View {
+        HStack {
+            VStack(alignment: .leading, spacing: 2) {
+                Text(levelName)
+                    .font(.headline)
+                    .foregroundStyle(.white)
+                Text("Blocks \(state.blocksPlaced)/\(state.maxBlocks)")
+                    .font(.caption)
+                    .foregroundStyle(.white.opacity(0.8))
+            }
+            .padding(10)
+            .background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: 10))
+            .allowsHitTesting(false)
 
             Spacer()
-        }
+                .allowsHitTesting(false)
 
+            Button(action: onPause) {
+                Image(systemName: "pause.fill")
+                    .padding(12)
+                    .background(.ultraThinMaterial, in: Circle())
+            }
+        }
+        .padding(.horizontal, 12)
+        .padding(.top, 8)
+    }
+
+    @ViewBuilder
+    private var modalContent: some View {
         if isPausePresented {
             overlayCard(title: "Paused", message: "Take a breath.") {
                 Button("Resume", action: onResume)
@@ -48,9 +73,7 @@ struct GameOverlayView: View {
                 Button("Retry", action: onRetry)
                 Button("Levels", action: onMenu)
             }
-        }
-
-        if case .won(let stars) = state.phase {
+        } else if case .won(let stars) = state.phase {
             overlayCard(title: "Level Complete!", message: "Nice build.") {
                 StarRatingView(stars: stars, maxStars: 3, size: 28)
                 Button("Next Level", action: onNext)
@@ -58,24 +81,13 @@ struct GameOverlayView: View {
                 Button("Retry", action: onRetry)
                 Button("Levels", action: onMenu)
             }
-        }
-
-        if case .failed = state.phase {
+        } else if case .failed = state.phase {
             overlayCard(title: "Tower Fell", message: "Try a wider base or grippy rubber.") {
                 Button("Retry", action: onRetry)
                     .buttonStyle(.borderedProminent)
                 Button("Levels", action: onMenu)
             }
         }
-
-        #if targetEnvironment(simulator) || DEBUG
-        if let gravityController {
-            DebugControlsView(gravity: gravityController)
-                .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .bottomLeading)
-                .padding(.leading, 8)
-                .padding(.bottom, 100)
-        }
-        #endif
     }
 
     @ViewBuilder

@@ -1,3 +1,4 @@
+import SpriteKit
 import SwiftUI
 
 struct GameView: View {
@@ -8,7 +9,7 @@ struct GameView: View {
     @StateObject private var session: GameSession
     @StateObject private var gravityController = GravityController()
     @State private var sceneController: TowerSceneProtocol?
-    @State private var dragLocation: CGPoint?
+    @State private var skView: SKView?
     @State private var showPause = false
 
     init(level: LevelConfig) {
@@ -23,17 +24,13 @@ struct GameView: View {
                     level: level,
                     session: session,
                     gravityController: gravityController,
-                    onSceneReady: { scene in
+                    onSceneReady: { view, scene in
+                        skView = view
                         sceneController = scene
                     }
                 )
                 .ignoresSafeArea()
-
-                if sizeClass == .regular {
-                    regularLayout(geo: geo)
-                } else {
-                    compactLayout(geo: geo)
-                }
+                .gesture(playfieldDragGesture)
 
                 if session.state.nearFail {
                     RadialGradient(
@@ -44,7 +41,19 @@ struct GameView: View {
                     )
                     .ignoresSafeArea()
                     .allowsHitTesting(false)
-                    .animation(.easeInOut(duration: 0.3), value: session.state.nearFail)
+                }
+
+                topHUD
+                    .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
+
+                bottomQueue
+                    .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .bottom)
+                    .padding(.horizontal, sizeClass == .regular ? 24 : 8)
+                    .padding(.bottom, sizeClass == .regular ? 24 : 12)
+
+                if sizeClass == .regular {
+                    sideHUD
+                        .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .trailing)
                 }
 
                 GameOverlayView(
@@ -76,8 +85,6 @@ struct GameView: View {
                     gravityController: gravityController
                 )
             }
-            .contentShape(Rectangle())
-            .gesture(dragGesture(in: geo))
         }
         .onAppear {
             gravityController.tiltSensitivity = level.tiltSensitivity
@@ -89,133 +96,118 @@ struct GameView: View {
         }
     }
 
-    @ViewBuilder
-    private func compactLayout(geo: GeometryProxy) -> some View {
-        VStack {
-            HStack(alignment: .top) {
-                HeightMeterView(
-                    current: session.state.currentHeight,
-                    target: session.state.targetHeight,
-                    holdProgress: session.state.holdProgress
-                )
-                .frame(width: 36, height: 180)
-                .padding(.leading, 12)
-                .padding(.top, 8)
+    private var topHUD: some View {
+        HStack(alignment: .top) {
+            HeightMeterView(
+                current: session.state.currentHeight,
+                target: session.state.targetHeight,
+                holdProgress: session.state.holdProgress
+            )
+            .frame(width: sizeClass == .regular ? 48 : 36, height: sizeClass == .regular ? 220 : 160)
+            .padding(.leading, sizeClass == .regular ? 16 : 12)
+            .padding(.top, 8)
+            .allowsHitTesting(false)
 
-                Spacer()
+            Spacer()
 
+            if sizeClass != .regular {
                 VStack(alignment: .trailing, spacing: 8) {
                     WindMeterView(
                         strength: session.state.windStrength,
                         direction: session.state.windDirection,
                         gustWarning: session.state.gustWarning
                     )
-                    Button {
-                        sceneController?.rotatePendingBlock()
-                    } label: {
-                        Image(systemName: "rotate.right")
-                            .font(.title3)
-                            .padding(10)
-                            .background(.ultraThinMaterial, in: Circle())
-                    }
+                    .allowsHitTesting(false)
+
+                    rotateButton
                 }
                 .padding(.trailing, 12)
                 .padding(.top, 8)
             }
-
-            Spacer()
-
-            BlockQueueView(
-                blocks: session.visibleQueue,
-                selectedOffset: session.state.selectedQueueOffset,
-                onSelect: { offset in
-                    (sceneController as? TowerScene)?.selectQueueOffset(offset)
-                }
-            )
-            .padding(.horizontal, 8)
-            .padding(.bottom, 12)
         }
     }
 
-    @ViewBuilder
-    private func regularLayout(geo: GeometryProxy) -> some View {
-        HStack(alignment: .center, spacing: 0) {
-            VStack {
-                HeightMeterView(
-                    current: session.state.currentHeight,
-                    target: session.state.targetHeight,
-                    holdProgress: session.state.holdProgress
-                )
-                .frame(width: 48, height: 260)
-                Spacer()
-            }
-            .frame(width: 80)
-            .padding(.leading, 16)
-            .padding(.top, 24)
+    private var sideHUD: some View {
+        VStack(alignment: .trailing, spacing: 12) {
+            WindMeterView(
+                strength: session.state.windStrength,
+                direction: session.state.windDirection,
+                gustWarning: session.state.gustWarning
+            )
+            .allowsHitTesting(false)
 
-            Spacer()
+            rotateButton
+        }
+        .padding(.trailing, 16)
+        .padding(.top, 24)
+    }
 
-            VStack {
-                WindMeterView(
-                    strength: session.state.windStrength,
-                    direction: session.state.windDirection,
-                    gustWarning: session.state.gustWarning
-                )
-                Button {
-                    sceneController?.rotatePendingBlock()
-                } label: {
+    private var rotateButton: some View {
+        Button {
+            sceneController?.rotatePendingBlock()
+        } label: {
+            Group {
+                if sizeClass == .regular {
                     Label("Rotate", systemImage: "rotate.right")
                         .font(.subheadline.weight(.semibold))
                         .padding(.horizontal, 16)
                         .padding(.vertical, 10)
-                        .background(.ultraThinMaterial, in: Capsule())
+                } else {
+                    Image(systemName: "rotate.right")
+                        .font(.title3)
+                        .padding(10)
                 }
-                .padding(.top, 12)
-                Spacer()
             }
-            .frame(width: 120)
-            .padding(.trailing, 16)
-            .padding(.top, 24)
-        }
-
-        VStack {
-            Spacer()
-            BlockQueueView(
-                blocks: session.visibleQueue,
-                selectedOffset: session.state.selectedQueueOffset,
-                onSelect: { offset in
-                    (sceneController as? TowerScene)?.selectQueueOffset(offset)
-                }
-            )
-            .frame(maxWidth: 600)
-            .padding(.horizontal, 24)
-            .padding(.bottom, 24)
+            .background(.ultraThinMaterial, in: Capsule())
         }
     }
 
-    private func dragGesture(in geo: GeometryProxy) -> some Gesture {
-        DragGesture(minimumDistance: 0, coordinateSpace: .local)
+    private var bottomQueue: some View {
+        BlockQueueView(
+            blocks: session.visibleQueue,
+            selectedOffset: session.state.selectedQueueOffset,
+            onSelect: { offset in
+                (sceneController as? TowerScene)?.selectQueueOffset(offset)
+            },
+            onDragChanged: { globalPoint in
+                handleDragChanged(at: globalPoint)
+            },
+            onDragEnded: { globalPoint in
+                handleDragEnded(at: globalPoint)
+            }
+        )
+        .frame(maxWidth: sizeClass == .regular ? 600 : .infinity)
+    }
+
+    private var playfieldDragGesture: some Gesture {
+        DragGesture(minimumDistance: 0, coordinateSpace: .global)
             .onChanged { value in
-                guard session.state.phase == .playing else { return }
-                dragLocation = value.location
-                let scenePoint = convertToScene(value.location, in: geo)
-                sceneController?.updateGhost(at: scenePoint)
+                handleDragChanged(at: value.location)
             }
             .onEnded { value in
-                guard session.state.phase == .playing else { return }
-                let scenePoint = convertToScene(value.location, in: geo)
-                sceneController?.placeBlock(at: scenePoint)
-                sceneController?.updateGhost(at: nil)
-                dragLocation = nil
+                handleDragEnded(at: value.location)
             }
     }
 
-    private func convertToScene(_ point: CGPoint, in geo: GeometryProxy) -> CGPoint {
-        let sceneWidth: CGFloat = 390
-        let sceneHeight: CGFloat = 844
-        let x = (point.x / geo.size.width - 0.5) * sceneWidth
-        let y = (0.5 - point.y / geo.size.height) * sceneHeight
-        return CGPoint(x: x, y: y)
+    private func handleDragChanged(at globalPoint: CGPoint) {
+        guard session.state.phase == .playing else { return }
+        let scenePoint = convertToScene(globalPoint)
+        sceneController?.updateGhost(at: scenePoint)
+    }
+
+    private func handleDragEnded(at globalPoint: CGPoint) {
+        guard session.state.phase == .playing else { return }
+        let scenePoint = convertToScene(globalPoint)
+        sceneController?.placeBlock(at: scenePoint)
+        sceneController?.updateGhost(at: nil)
+    }
+
+    private func convertToScene(_ globalPoint: CGPoint) -> CGPoint {
+        guard let skView, let scene = skView.scene else {
+            return .zero
+        }
+        let viewPoint = skView.convert(globalPoint, from: nil)
+        return scene.convertPoint(fromView: viewPoint)
     }
 }
 

@@ -5,11 +5,12 @@ struct SpriteKitView: UIViewRepresentable {
     let level: LevelConfig
     @ObservedObject var session: GameSession
     @ObservedObject var gravityController: GravityController
-    var onSceneReady: (TowerSceneProtocol) -> Void
+    var onSceneReady: (SKView, TowerSceneProtocol) -> Void
 
     func makeUIView(context: Context) -> SKView {
         let view = SKView()
         view.ignoresSiblingOrder = true
+        view.isMultipleTouchEnabled = false
         view.showsFPS = false
         view.showsNodeCount = false
         view.preferredFramesPerSecond = 60
@@ -19,9 +20,10 @@ struct SpriteKitView: UIViewRepresentable {
         scene.gameDelegate = context.coordinator
         scene.configure(level: level, gravityController: gravityController)
         context.coordinator.scene = scene
+        context.coordinator.skView = view
         view.presentScene(scene)
         DispatchQueue.main.async {
-            onSceneReady(scene)
+            onSceneReady(view, scene)
         }
         return view
     }
@@ -38,6 +40,7 @@ struct SpriteKitView: UIViewRepresentable {
     final class Coordinator: NSObject, TowerSceneDelegate {
         var session: GameSession
         weak var scene: TowerScene?
+        weak var skView: SKView?
 
         init(session: GameSession) {
             self.session = session

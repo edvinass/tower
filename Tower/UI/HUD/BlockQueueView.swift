@@ -4,25 +4,39 @@ struct BlockQueueView: View {
     let blocks: [BlockSpec]
     let selectedOffset: Int
     let onSelect: (Int) -> Void
+    var onDragChanged: ((CGPoint) -> Void)?
+    var onDragEnded: ((CGPoint) -> Void)?
 
     var body: some View {
         HStack(spacing: 10) {
             ForEach(Array(blocks.enumerated()), id: \.offset) { index, spec in
-                Button {
-                    onSelect(index)
-                } label: {
-                    BlockPreview(spec: spec)
-                        .frame(width: 64, height: 64)
-                        .background(
-                            RoundedRectangle(cornerRadius: 12)
-                                .fill(index == selectedOffset ? Color.white.opacity(0.35) : Color.black.opacity(0.2))
-                        )
-                        .overlay(
-                            RoundedRectangle(cornerRadius: 12)
-                                .stroke(index == selectedOffset ? Color.white : Color.clear, lineWidth: 2)
-                        )
-                }
-                .buttonStyle(.plain)
+                let isSelected = index == selectedOffset
+                BlockPreview(spec: spec)
+                    .frame(width: 64, height: 64)
+                    .background(
+                        RoundedRectangle(cornerRadius: 12)
+                            .fill(isSelected ? Color.white.opacity(0.35) : Color.black.opacity(0.2))
+                    )
+                    .overlay(
+                        RoundedRectangle(cornerRadius: 12)
+                            .stroke(isSelected ? Color.white : Color.clear, lineWidth: 2)
+                    )
+                    .contentShape(RoundedRectangle(cornerRadius: 12))
+                    .onTapGesture {
+                        onSelect(index)
+                    }
+                    .gesture(
+                        DragGesture(minimumDistance: 4, coordinateSpace: .global)
+                            .onChanged { value in
+                                guard isSelected else { return }
+                                onDragChanged?(value.location)
+                            }
+                            .onEnded { value in
+                                guard isSelected else { return }
+                                onDragEnded?(value.location)
+                            }
+                    )
+
             }
 
             if blocks.isEmpty {

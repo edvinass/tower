@@ -287,6 +287,7 @@ final class TowerScene: SKScene, TowerSceneProtocol {
 
         guard isValidPlacement(for: block) else {
             block.playInvalidShake()
+            block.removeFromParent()
             return
         }
 
