@@ -236,7 +236,8 @@ final class TowerScene: SKScene, TowerSceneProtocol {
                 triggerFail()
                 return
             }
-            if block.calculateAccumulatedFrame().minY < platform.failLineY + 40 {
+            let frame = block.calculateAccumulatedFrame()
+            if frame.maxY < platform.topY + 20 && frame.minY < platform.failLineY + 60 {
                 anyNear = true
             }
         }

@@ -41,14 +41,19 @@ struct HeightTracker {
         let delta = lastUpdateTime.map { time - $0 } ?? 0
         lastUpdateTime = time
 
-        if blocks.isEmpty {
+        let stackedBlocks = blocks.filter { isStackedOnTower($0) }
+
+        if stackedBlocks.isEmpty {
             currentHeight = 0
-            holdProgress = 0
-            reachedTarget = false
+            if reachedTarget {
+                holdProgress = max(0, holdProgress - delta)
+            } else {
+                holdProgress = 0
+            }
             return .inProgress
         }
 
-        let towerTopY = measureTowerTop(from: blocks)
+        let towerTopY = stackedBlocks.map { $0.calculateAccumulatedFrame().maxY }.max() ?? platformTopY
         currentHeight = max(0, towerTopY - platformTopY)
 
         if towerTopY >= targetAbsoluteY {
@@ -62,10 +67,17 @@ struct HeightTracker {
         }
 
         if reachedTarget {
-            if belowTargetSince == nil {
-                belowTargetSince = time
-            } else if let start = belowTargetSince, time - start > 1.0 {
-                return .failedDroppedBelow
+            // Only penalize a meaningful drop, not wobble or a settling bounce.
+            let dropBelowTarget = targetAbsoluteY - towerTopY
+            if dropBelowTarget > targetHeightAbovePlatform * 0.35 {
+                if belowTargetSince == nil {
+                    belowTargetSince = time
+                } else if let start = belowTargetSince, time - start > 1.5 {
+                    return .failedDroppedBelow
+                }
+            } else {
+                belowTargetSince = nil
+                holdProgress = max(0, holdProgress - delta * 0.5)
             }
         } else {
             holdProgress = 0
@@ -74,28 +86,28 @@ struct HeightTracker {
         return .inProgress
     }
 
-    /// Ignore blocks that fell off or are flying upward from a bounce.
-    private func measureTowerTop(from blocks: [BlockNode]) -> CGFloat {
-        let contributing = blocks.filter { contributesToTowerHeight($0) }
-        let source = contributing.isEmpty ? blocks : contributing
-        return source.map { $0.calculateAccumulatedFrame().maxY }.max() ?? platformTopY
-    }
-
-    private func contributesToTowerHeight(_ block: BlockNode) -> Bool {
+    /// Blocks still part of the tower (on or above the platform).
+    private func isStackedOnTower(_ block: BlockNode) -> Bool {
         let frame = block.calculateAccumulatedFrame()
-        guard frame.minY > platformTopY - 20 else { return false }
-        guard let body = block.physicsBody else { return true }
-        let speed = hypot(body.velocity.dx, body.velocity.dy)
-        return speed < 120
+        return frame.maxY > platformTopY - 15
     }
 
     func blockFailed(_ block: BlockNode, platform: PlatformNode) -> Bool {
         let frame = block.calculateAccumulatedFrame()
-        if frame.maxY < failLineY { return true }
-        if frame.minY < platform.failLineY { return true }
-        let margin: CGFloat = 20
-        if frame.maxX < platform.leftBound - margin { return true }
-        if frame.minX > platform.rightBound + margin { return true }
+
+        // Entire block fell well below the platform.
+        if frame.maxY < platform.topY - 25 {
+            return true
+        }
+
+        // Block slid off the side only counts if it has also dropped near the fail line.
+        let sideMargin: CGFloat = 45
+        let offPlatformX = frame.maxX < platform.leftBound - sideMargin
+            || frame.minX > platform.rightBound + sideMargin
+        if offPlatformX && frame.maxY < platform.topY + 5 {
+            return true
+        }
+
         return false
     }
 }
