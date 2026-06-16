@@ -11,7 +11,6 @@ struct GameView: View {
     @State private var sceneController: TowerSceneProtocol?
     @State private var skView: SKView?
     @State private var showPause = false
-    @State private var isDraggingPiece = false
 
     init(level: LevelConfig) {
         self.level = level
@@ -32,6 +31,11 @@ struct GameView: View {
                 )
                 .ignoresSafeArea()
 
+                PlacementPanOverlay(isEnabled: session.state.phase == .playing) { point, state in
+                    handlePan(at: point, state: state)
+                }
+                .ignoresSafeArea()
+
                 if session.state.nearFail {
                     RadialGradient(
                         colors: [.red.opacity(0.35), .clear],
@@ -42,9 +46,6 @@ struct GameView: View {
                     .ignoresSafeArea()
                     .allowsHitTesting(false)
                 }
-
-                // Playfield drag layer — only the area not covered by HUD chrome.
-                playfieldDragLayer(in: geo)
 
                 GameOverlayView(
                     state: session.state,
@@ -60,7 +61,6 @@ struct GameView: View {
                     onRetry: {
                         sceneController?.retry()
                         showPause = false
-                        isDraggingPiece = false
                     },
                     onNext: {
                         if let next = LevelLoader.shared.level(withId: level.levelId + 1) {
@@ -76,11 +76,22 @@ struct GameView: View {
                     gravityController: gravityController
                 )
             }
-            .overlay(alignment: .top) { topHUD }
-            .overlay(alignment: .bottom) { bottomQueue }
-            .overlay(alignment: .trailing) {
-                if sizeClass == .regular { sideHUD }
+            .overlay(alignment: .top) { topHUD.allowsHitTesting(true) }
+            .overlay(alignment: .bottom) {
+                bottomQueue.allowsHitTesting(true)
             }
+            .overlay(alignment: .trailing) {
+                if sizeClass == .regular { sideHUD.allowsHitTesting(true) }
+            }
+            #if targetEnvironment(simulator) || DEBUG
+            .overlay(alignment: .bottomLeading) {
+                if session.state.phase == .playing {
+                    DebugControlsView(gravity: gravityController)
+                        .padding(.leading, 8)
+                        .padding(.bottom, 100)
+                }
+            }
+            #endif
         }
         .onAppear {
             gravityController.tiltSensitivity = level.tiltSensitivity
@@ -90,20 +101,6 @@ struct GameView: View {
                 appModel.progressStore.recordCompletion(level: level, stars: stars)
             }
         }
-    }
-
-    private func playfieldDragLayer(in geo: GeometryProxy) -> some View {
-        let topInset: CGFloat = sizeClass == .regular ? 100 : 88
-        let bottomInset: CGFloat = sizeClass == .regular ? 130 : 110
-
-        return VStack(spacing: 0) {
-            Color.clear.frame(height: topInset).allowsHitTesting(false)
-            Color.clear
-                .contentShape(Rectangle())
-                .gesture(playfieldDragGesture)
-            Color.clear.frame(height: bottomInset).allowsHitTesting(false)
-        }
-        .allowsHitTesting(session.state.phase == .playing)
     }
 
     private var topHUD: some View {
@@ -179,49 +176,29 @@ struct GameView: View {
             selectedOffset: session.state.selectedQueueOffset,
             onSelect: { offset in
                 (sceneController as? TowerScene)?.selectQueueOffset(offset)
-            },
-            onDragChanged: { globalPoint in
-                handleDragChanged(at: globalPoint)
-            },
-            onDragEnded: { globalPoint in
-                handleDragEnded(at: globalPoint)
             }
         )
         .frame(maxWidth: sizeClass == .regular ? 600 : .infinity)
         .padding(.horizontal, sizeClass == .regular ? 24 : 8)
         .padding(.bottom, sizeClass == .regular ? 24 : 12)
+        .id(session.state.queueIndex)
     }
 
-    private var playfieldDragGesture: some Gesture {
-        DragGesture(minimumDistance: 4, coordinateSpace: .global)
-            .onChanged { value in
-                handleDragChanged(at: value.location)
-            }
-            .onEnded { value in
-                handleDragEnded(at: value.location)
-            }
-    }
-
-    private func handleDragChanged(at globalPoint: CGPoint) {
+    private func handlePan(at globalPoint: CGPoint, state: UIGestureRecognizer.State) {
         guard session.state.phase == .playing else { return }
-        isDraggingPiece = true
         let scenePoint = convertToScene(globalPoint)
-        sceneController?.updateGhost(at: scenePoint)
-    }
 
-    private func handleDragEnded(at globalPoint: CGPoint) {
-        guard session.state.phase == .playing else { return }
-        isDraggingPiece = false
-
-        let scenePoint = convertToScene(globalPoint)
-        if sceneController?.isReadyForPlacement() == true {
-            let placed = sceneController?.placeBlock(at: scenePoint) ?? false
-            if !placed {
-                // Keep ghost visible briefly on invalid placement so user can adjust.
+        switch state {
+        case .began, .changed:
+            sceneController?.updateGhost(at: scenePoint)
+        case .ended:
+            if sceneController?.placeBlock(at: scenePoint) != true {
                 sceneController?.updateGhost(at: scenePoint)
             }
-        } else {
+        case .cancelled, .failed:
             sceneController?.updateGhost(at: nil)
+        default:
+            break
         }
     }
 

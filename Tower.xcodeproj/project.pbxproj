@@ -43,6 +43,7 @@
 		E43B2EF930E3CFAF618E1E85 /* PlatformNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = A823D2E8808A1FEFD008C671 /* PlatformNode.swift */; };
 		EF3EB7F6A0DA614C2886B0BF /* GameOverlayView.swift in Sources */ = {isa = PBXBuildFile; fileRef = DA1ADC12C888E0628BC82E5B /* GameOverlayView.swift */; };
 		F25A954E8BE94A14230F5524 /* GravityController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C09D08A5DE604FC63B9322DB /* GravityController.swift */; };
+		FA7DAC5B5C4CD16E5138E42E /* PlacementPanOverlay.swift in Sources */ = {isa = PBXBuildFile; fileRef = CD20986B84A8958582A3E5A2 /* PlacementPanOverlay.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -73,6 +74,7 @@
 		BD5AF9719F5C7FCF0649FEC2 /* WindMeterView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WindMeterView.swift; sourceTree = "<group>"; };
 		C09D08A5DE604FC63B9322DB /* GravityController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GravityController.swift; sourceTree = "<group>"; };
 		C2F0A05ED41DCB4CDF712DDC /* Tower.app */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.application; path = Tower.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		CD20986B84A8958582A3E5A2 /* PlacementPanOverlay.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlacementPanOverlay.swift; sourceTree = "<group>"; };
 		D5200FE0B5FF35D5B7FE4C1D /* LevelConfig.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LevelConfig.swift; sourceTree = "<group>"; };
 		D827B7E321E04B8EF7E50700 /* StarRatingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StarRatingView.swift; sourceTree = "<group>"; };
 		DA1ADC12C888E0628BC82E5B /* GameOverlayView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameOverlayView.swift; sourceTree = "<group>"; };
@@ -144,6 +146,7 @@
 				19DE75407CC17DB6EA47D4D6 /* ContentView.swift */,
 				5BE99D3B0144F3DF2D8F8957 /* GameView.swift */,
 				2B74F4CDACC7741AFB8744AB /* LevelSelectView.swift */,
+				CD20986B84A8958582A3E5A2 /* PlacementPanOverlay.swift */,
 				150BE8AB70C24B9B6BB90C73 /* Components */,
 				65E71559201C471920730A2E /* HUD */,
 			);
@@ -363,6 +366,7 @@
 				D0760889038CF9B7E62004D9 /* LevelSelectView.swift in Sources */,
 				643AB80995220C62316FCD8D /* Material.swift in Sources */,
 				B70B944CE88ACC84F4D0888C /* PhysicsCategories.swift in Sources */,
+				FA7DAC5B5C4CD16E5138E42E /* PlacementPanOverlay.swift in Sources */,
 				E43B2EF930E3CFAF618E1E85 /* PlatformNode.swift in Sources */,
 				67971C1BB2FE6B515FF6AA30 /* ProgressStore.swift in Sources */,
 				A8AE7AF80D1900BCD4E6DA51 /* SpriteKitView.swift in Sources */,

@@ -26,15 +26,6 @@ struct GameOverlayView: View {
                 levelInfoBar
             }
         }
-        .overlay(alignment: .bottomLeading) {
-            #if targetEnvironment(simulator) || DEBUG
-            if let gravityController, !showsModal {
-                DebugControlsView(gravity: gravityController)
-                    .padding(.leading, 8)
-                    .padding(.bottom, 100)
-            }
-            #endif
-        }
     }
 
     private var levelInfoBar: some View {

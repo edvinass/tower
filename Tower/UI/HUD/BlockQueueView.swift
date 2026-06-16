@@ -5,13 +5,11 @@ struct BlockQueueView: View {
     let queueBaseIndex: Int
     let selectedOffset: Int
     let onSelect: (Int) -> Void
-    var onDragChanged: ((CGPoint) -> Void)?
-    var onDragEnded: ((CGPoint) -> Void)?
 
     var body: some View {
         HStack(spacing: 10) {
-            ForEach(Array(blocks.enumerated()), id: \.offset) { index, spec in
-                queueItem(index: index, spec: spec)
+            ForEach(0..<blocks.count, id: \.self) { index in
+                queueItem(index: index, spec: blocks[index])
             }
 
             if blocks.isEmpty {
@@ -39,27 +37,8 @@ struct BlockQueueView: View {
                     .stroke(isSelected ? Color.white : Color.clear, lineWidth: 2)
             )
             .contentShape(RoundedRectangle(cornerRadius: 12))
-            .id("\(queueBaseIndex)-\(index)-\(spec.token)")
-            .gesture(queueDragGesture(index: index, isSelected: isSelected))
-    }
-
-    private func queueDragGesture(index: Int, isSelected: Bool) -> some Gesture {
-        DragGesture(minimumDistance: 0, coordinateSpace: .global)
-            .onChanged { value in
-                let distance = hypot(value.translation.width, value.translation.height)
-                guard distance > 3 else { return }
-                if !isSelected {
-                    onSelect(index)
-                }
-                onDragChanged?(value.location)
-            }
-            .onEnded { value in
-                let distance = hypot(value.translation.width, value.translation.height)
-                if distance <= 3 {
-                    onSelect(index)
-                    return
-                }
-                onDragEnded?(value.location)
+            .onTapGesture {
+                onSelect(index)
             }
     }
 }

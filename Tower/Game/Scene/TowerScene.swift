@@ -39,8 +39,10 @@ final class TowerScene: SKScene, TowerSceneProtocol {
     private var lastTime: TimeInterval = 0
     private var lastGustWarning = false
     private var nearFail = false
+    private var lastHUDPublishTime: TimeInterval = 0
+    private let hudPublishInterval: TimeInterval = 0.12
 
-    private let placementCooldown: TimeInterval = 0.3
+    private let placementCooldown: TimeInterval = 0.05
 
     func configure(level: LevelConfig, gravityController: GravityController) {
         self.level = level
@@ -165,6 +167,12 @@ final class TowerScene: SKScene, TowerSceneProtocol {
         updateWobble()
         checkFailures()
         evaluateHeight(at: currentTime)
+        publishHUDIfNeeded(at: currentTime)
+    }
+
+    private func publishHUDIfNeeded(at time: TimeInterval) {
+        guard time - lastHUDPublishTime >= hudPublishInterval else { return }
+        lastHUDPublishTime = time
         publishState()
     }
 
@@ -426,9 +434,9 @@ final class TowerScene: SKScene, TowerSceneProtocol {
 
         let state = GameSessionState(
             phase: phase,
-            currentHeight: Double(heightTracker.currentHeight - platform.topY),
+            currentHeight: Double(heightTracker.currentHeight - platform.topY).rounded(),
             targetHeight: level.targetHeight,
-            holdProgress: heightTracker.holdProgress / level.holdDuration,
+            holdProgress: (heightTracker.holdProgress / level.holdDuration * 20).rounded() / 20,
             holdDuration: level.holdDuration,
             blocksPlaced: blocksPlaced,
             maxBlocks: level.maxBlocks,

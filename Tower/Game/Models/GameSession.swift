@@ -25,6 +25,7 @@ final class GameSession: ObservableObject {
     }
 
     func updateFromScene(_ state: GameSessionState) {
+        guard self.state != state else { return }
         self.state = state
     }
 
