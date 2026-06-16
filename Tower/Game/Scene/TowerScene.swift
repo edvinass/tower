@@ -4,8 +4,9 @@ import UIKit
 @MainActor
 protocol TowerSceneProtocol: AnyObject {
     func rotatePendingBlock()
-    func placeBlock(at scenePoint: CGPoint)
+    func placeBlock(at scenePoint: CGPoint) -> Bool
     func updateGhost(at scenePoint: CGPoint?)
+    func isReadyForPlacement() -> Bool
     func pause()
     func resume()
     func retry()
@@ -276,10 +277,10 @@ final class TowerScene: SKScene, TowerSceneProtocol {
         }
     }
 
-    func placeBlock(at scenePoint: CGPoint) {
-        guard !gameEnded, !gamePaused else { return }
-        guard CACurrentMediaTime() >= placementCooldownUntil else { return }
-        guard let spec = currentSpec() else { return }
+    func placeBlock(at scenePoint: CGPoint) -> Bool {
+        guard !gameEnded, !gamePaused else { return false }
+        guard CACurrentMediaTime() >= placementCooldownUntil else { return false }
+        guard let spec = currentSpec() else { return false }
 
         let block = BlockNode.make(spec: spec, rotationSteps: rotationSteps)
         block.position = scenePoint
@@ -288,7 +289,7 @@ final class TowerScene: SKScene, TowerSceneProtocol {
         guard isValidPlacement(for: block) else {
             block.playInvalidShake()
             block.removeFromParent()
-            return
+            return false
         }
 
         block.activatePhysics()
@@ -306,6 +307,11 @@ final class TowerScene: SKScene, TowerSceneProtocol {
         AudioManager.shared.playImpact(for: spec.material)
         gameDelegate?.sceneDidPlaceBlock()
         publishState()
+        return true
+    }
+
+    func isReadyForPlacement() -> Bool {
+        !gameEnded && !gamePaused && CACurrentMediaTime() >= placementCooldownUntil && currentSpec() != nil
     }
 
     private func currentSpec() -> BlockSpec? {
