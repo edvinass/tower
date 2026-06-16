@@ -1,0 +1,130 @@
+{
+  "world": 5,
+  "title": "Sky High",
+  "levels": [
+    {
+      "levelId": 21,
+      "name": "Gust",
+      "world": 5,
+      "targetHeight": 150,
+      "holdDuration": 2.0,
+      "maxBlocks": 12,
+      "blockQueue": [
+        "wood_rectangle",
+        "metal_square",
+        "rubber_plank",
+        "wood_square",
+        "ice_rectangle",
+        "wood_rectangle"
+      ],
+      "wind": {
+        "baseStrength": 0.45,
+        "gustFrequency": 0.2,
+        "direction": "random"
+      },
+      "tiltSensitivity": 1.0,
+      "platformWidth": 5.5,
+      "parBlocks": 6
+    },
+    {
+      "levelId": 22,
+      "name": "Crosswind",
+      "world": 5,
+      "targetHeight": 165,
+      "holdDuration": 2.0,
+      "maxBlocks": 12,
+      "blockQueue": [
+        "metal_plank",
+        "wood_square",
+        "rubber_rectangle",
+        "ice_square",
+        "wood_triangle",
+        "metal_square"
+      ],
+      "wind": {
+        "baseStrength": 0,
+        "gustFrequency": 0,
+        "direction": "right"
+      },
+      "tiltSensitivity": 1.0,
+      "platformWidth": 5.5,
+      "parBlocks": 6
+    },
+    {
+      "levelId": 23,
+      "name": "Sky High",
+      "world": 5,
+      "targetHeight": 180,
+      "holdDuration": 2.0,
+      "maxBlocks": 12,
+      "blockQueue": [
+        "wood_rectangle",
+        "metal_square",
+        "rubber_square",
+        "ice_plank",
+        "wood_rectangle",
+        "metal_rectangle",
+        "rubber_triangle"
+      ],
+      "wind": {
+        "baseStrength": 0.45,
+        "gustFrequency": 0.2,
+        "direction": "random"
+      },
+      "tiltSensitivity": 1.0,
+      "platformWidth": 5.5,
+      "parBlocks": 6
+    },
+    {
+      "levelId": 24,
+      "name": "Balanced",
+      "world": 5,
+      "targetHeight": 195,
+      "holdDuration": 2.0,
+      "maxBlocks": 12,
+      "blockQueue": [
+        "metal_rectangle",
+        "rubber_square",
+        "wood_plank",
+        "ice_rectangle",
+        "wood_square",
+        "metal_triangle",
+        "rubber_rectangle"
+      ],
+      "wind": {
+        "baseStrength": 0.45,
+        "gustFrequency": 0.2,
+        "direction": "random"
+      },
+      "tiltSensitivity": 1.0,
+      "platformWidth": 5.5,
+      "parBlocks": 6
+    },
+    {
+      "levelId": 25,
+      "name": "Reach",
+      "world": 5,
+      "targetHeight": 210,
+      "holdDuration": 2.0,
+      "maxBlocks": 12,
+      "blockQueue": [
+        "wood_square",
+        "metal_plank",
+        "rubber_rectangle",
+        "ice_square",
+        "wood_rectangle",
+        "metal_square",
+        "rubber_triangle",
+        "wood_rectangle"
+      ],
+      "wind": {
+        "baseStrength": 0.45,
+        "gustFrequency": 0.2,
+        "direction": "random"
+      },
+      "tiltSensitivity": 1.0,
+      "platformWidth": 5.5,
+      "parBlocks": 7
+    }
+  ]
+}

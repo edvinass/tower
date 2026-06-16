@@ -1,0 +1,125 @@
+{
+  "world": 2,
+  "title": "Slippery Slopes",
+  "levels": [
+    {
+      "levelId": 6,
+      "name": "Cool Touch",
+      "world": 2,
+      "targetHeight": 100,
+      "holdDuration": 2.0,
+      "maxBlocks": 12,
+      "blockQueue": [
+        "wood_rectangle",
+        "ice_square",
+        "wood_rectangle",
+        "ice_rectangle",
+        "wood_square"
+      ],
+      "wind": {
+        "baseStrength": 0,
+        "gustFrequency": 0,
+        "direction": "right"
+      },
+      "tiltSensitivity": 1.0,
+      "platformWidth": 6.0,
+      "parBlocks": 6
+    },
+    {
+      "levelId": 7,
+      "name": "Slippery",
+      "world": 2,
+      "targetHeight": 120,
+      "holdDuration": 2.0,
+      "maxBlocks": 12,
+      "blockQueue": [
+        "ice_rectangle",
+        "wood_square",
+        "ice_square",
+        "wood_rectangle",
+        "ice_triangle"
+      ],
+      "wind": {
+        "baseStrength": 0,
+        "gustFrequency": 0,
+        "direction": "right"
+      },
+      "tiltSensitivity": 1.0,
+      "platformWidth": 6.0,
+      "parBlocks": 6
+    },
+    {
+      "levelId": 8,
+      "name": "Frost Stack",
+      "world": 2,
+      "targetHeight": 140,
+      "holdDuration": 2.0,
+      "maxBlocks": 12,
+      "blockQueue": [
+        "wood_plank",
+        "ice_square",
+        "wood_rectangle",
+        "ice_rectangle",
+        "wood_square",
+        "ice_square"
+      ],
+      "wind": {
+        "baseStrength": 0,
+        "gustFrequency": 0,
+        "direction": "right"
+      },
+      "tiltSensitivity": 1.0,
+      "platformWidth": 6.0,
+      "parBlocks": 6
+    },
+    {
+      "levelId": 9,
+      "name": "Thin Ice",
+      "world": 2,
+      "targetHeight": 150,
+      "holdDuration": 2.0,
+      "maxBlocks": 12,
+      "blockQueue": [
+        "ice_plank",
+        "wood_rectangle",
+        "ice_square",
+        "wood_square",
+        "ice_rectangle",
+        "ice_triangle"
+      ],
+      "wind": {
+        "baseStrength": 0,
+        "gustFrequency": 0,
+        "direction": "right"
+      },
+      "tiltSensitivity": 1.0,
+      "platformWidth": 6.0,
+      "parBlocks": 6
+    },
+    {
+      "levelId": 10,
+      "name": "Ice Tower",
+      "world": 2,
+      "targetHeight": 170,
+      "holdDuration": 2.0,
+      "maxBlocks": 12,
+      "blockQueue": [
+        "wood_rectangle",
+        "ice_square",
+        "ice_rectangle",
+        "wood_square",
+        "ice_triangle",
+        "wood_rectangle",
+        "ice_square"
+      ],
+      "wind": {
+        "baseStrength": 0,
+        "gustFrequency": 0,
+        "direction": "right"
+      },
+      "tiltSensitivity": 1.0,
+      "platformWidth": 6.0,
+      "parBlocks": 6
+    }
+  ]
+}

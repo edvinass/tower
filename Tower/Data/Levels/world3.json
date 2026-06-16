@@ -1,0 +1,125 @@
+{
+  "world": 3,
+  "title": "Grip and Bounce",
+  "levels": [
+    {
+      "levelId": 11,
+      "name": "Bounce",
+      "world": 3,
+      "targetHeight": 110,
+      "holdDuration": 2.0,
+      "maxBlocks": 12,
+      "blockQueue": [
+        "wood_rectangle",
+        "rubber_square",
+        "wood_rectangle",
+        "rubber_triangle",
+        "wood_square"
+      ],
+      "wind": {
+        "baseStrength": 0.15,
+        "gustFrequency": 0.05,
+        "direction": "random"
+      },
+      "tiltSensitivity": 1.0,
+      "platformWidth": 6.0,
+      "parBlocks": 6
+    },
+    {
+      "levelId": 12,
+      "name": "Grip",
+      "world": 3,
+      "targetHeight": 130,
+      "holdDuration": 2.0,
+      "maxBlocks": 12,
+      "blockQueue": [
+        "rubber_rectangle",
+        "wood_square",
+        "rubber_square",
+        "wood_rectangle",
+        "rubber_plank"
+      ],
+      "wind": {
+        "baseStrength": 0,
+        "gustFrequency": 0,
+        "direction": "right"
+      },
+      "tiltSensitivity": 1.0,
+      "platformWidth": 6.0,
+      "parBlocks": 6
+    },
+    {
+      "levelId": 13,
+      "name": "Flex",
+      "world": 3,
+      "targetHeight": 145,
+      "holdDuration": 2.0,
+      "maxBlocks": 12,
+      "blockQueue": [
+        "wood_rectangle",
+        "rubber_circle",
+        "wood_square",
+        "rubber_rectangle",
+        "wood_triangle",
+        "rubber_square"
+      ],
+      "wind": {
+        "baseStrength": 0,
+        "gustFrequency": 0,
+        "direction": "right"
+      },
+      "tiltSensitivity": 1.0,
+      "platformWidth": 6.0,
+      "parBlocks": 6
+    },
+    {
+      "levelId": 14,
+      "name": "Sticky",
+      "world": 3,
+      "targetHeight": 155,
+      "holdDuration": 2.0,
+      "maxBlocks": 12,
+      "blockQueue": [
+        "rubber_plank",
+        "wood_rectangle",
+        "rubber_square",
+        "ice_rectangle",
+        "rubber_triangle",
+        "wood_square"
+      ],
+      "wind": {
+        "baseStrength": 0,
+        "gustFrequency": 0,
+        "direction": "right"
+      },
+      "tiltSensitivity": 1.0,
+      "platformWidth": 6.0,
+      "parBlocks": 6
+    },
+    {
+      "levelId": 15,
+      "name": "Spring",
+      "world": 3,
+      "targetHeight": 175,
+      "holdDuration": 2.0,
+      "maxBlocks": 12,
+      "blockQueue": [
+        "wood_square",
+        "rubber_rectangle",
+        "rubber_square",
+        "wood_rectangle",
+        "rubber_triangle",
+        "wood_square",
+        "rubber_rectangle"
+      ],
+      "wind": {
+        "baseStrength": 0,
+        "gustFrequency": 0,
+        "direction": "right"
+      },
+      "tiltSensitivity": 1.0,
+      "platformWidth": 6.0,
+      "parBlocks": 6
+    }
+  ]
+}

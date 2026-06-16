@@ -1,0 +1,126 @@
+{
+  "world": 4,
+  "title": "Heavy Metal",
+  "levels": [
+    {
+      "levelId": 16,
+      "name": "Heavy",
+      "world": 4,
+      "targetHeight": 130,
+      "holdDuration": 2.0,
+      "maxBlocks": 12,
+      "blockQueue": [
+        "metal_rectangle",
+        "wood_plank",
+        "metal_square",
+        "wood_rectangle",
+        "metal_rectangle"
+      ],
+      "wind": {
+        "baseStrength": 0.2,
+        "gustFrequency": 0.08,
+        "direction": "random"
+      },
+      "tiltSensitivity": 1.0,
+      "platformWidth": 6.0,
+      "parBlocks": 6
+    },
+    {
+      "levelId": 17,
+      "name": "Anchor",
+      "world": 4,
+      "targetHeight": 150,
+      "holdDuration": 2.0,
+      "maxBlocks": 12,
+      "blockQueue": [
+        "metal_rectangle",
+        "metal_square",
+        "wood_rectangle",
+        "metal_plank",
+        "wood_square",
+        "metal_rectangle"
+      ],
+      "wind": {
+        "baseStrength": 0,
+        "gustFrequency": 0,
+        "direction": "right"
+      },
+      "tiltSensitivity": 1.0,
+      "platformWidth": 6.0,
+      "parBlocks": 6
+    },
+    {
+      "levelId": 18,
+      "name": "Steel Stack",
+      "world": 4,
+      "targetHeight": 165,
+      "holdDuration": 2.0,
+      "maxBlocks": 12,
+      "blockQueue": [
+        "wood_rectangle",
+        "metal_square",
+        "metal_rectangle",
+        "wood_plank",
+        "metal_triangle",
+        "wood_square"
+      ],
+      "wind": {
+        "baseStrength": 0,
+        "gustFrequency": 0,
+        "direction": "right"
+      },
+      "tiltSensitivity": 1.0,
+      "platformWidth": 6.0,
+      "parBlocks": 6
+    },
+    {
+      "levelId": 19,
+      "name": "Iron Base",
+      "world": 4,
+      "targetHeight": 180,
+      "holdDuration": 2.0,
+      "maxBlocks": 12,
+      "blockQueue": [
+        "metal_plank",
+        "metal_rectangle",
+        "wood_square",
+        "metal_square",
+        "wood_rectangle",
+        "metal_rectangle"
+      ],
+      "wind": {
+        "baseStrength": 0,
+        "gustFrequency": 0,
+        "direction": "right"
+      },
+      "tiltSensitivity": 1.0,
+      "platformWidth": 6.0,
+      "parBlocks": 6
+    },
+    {
+      "levelId": 20,
+      "name": "Forged",
+      "world": 4,
+      "targetHeight": 195,
+      "holdDuration": 2.0,
+      "maxBlocks": 12,
+      "blockQueue": [
+        "metal_rectangle",
+        "metal_square",
+        "wood_rectangle",
+        "metal_plank",
+        "metal_triangle",
+        "wood_square",
+        "metal_rectangle"
+      ],
+      "wind": {
+        "baseStrength": 0,
+        "gustFrequency": 0,
+        "direction": "right"
+      },
+      "tiltSensitivity": 1.0,
+      "platformWidth": 6.0,
+      "parBlocks": 6
+    }
+  ]
+}

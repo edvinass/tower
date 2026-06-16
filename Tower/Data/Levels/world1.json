@@ -1,0 +1,126 @@
+{
+  "world": 1,
+  "title": "Foundations",
+  "levels": [
+    {
+      "levelId": 1,
+      "name": "First Steps",
+      "world": 1,
+      "targetHeight": 80,
+      "holdDuration": 2.0,
+      "maxBlocks": 12,
+      "blockQueue": [
+        "wood_rectangle",
+        "wood_square",
+        "wood_rectangle",
+        "wood_square",
+        "wood_rectangle"
+      ],
+      "wind": {
+        "baseStrength": 0,
+        "gustFrequency": 0,
+        "direction": "right"
+      },
+      "tiltSensitivity": 1.0,
+      "platformWidth": 6.0,
+      "parBlocks": 6
+    },
+    {
+      "levelId": 2,
+      "name": "Stack Up",
+      "world": 1,
+      "targetHeight": 100,
+      "holdDuration": 2.0,
+      "maxBlocks": 12,
+      "blockQueue": [
+        "wood_rectangle",
+        "wood_square",
+        "wood_rectangle",
+        "wood_triangle",
+        "wood_square",
+        "wood_rectangle"
+      ],
+      "wind": {
+        "baseStrength": 0,
+        "gustFrequency": 0,
+        "direction": "right"
+      },
+      "tiltSensitivity": 1.0,
+      "platformWidth": 6.0,
+      "parBlocks": 6
+    },
+    {
+      "levelId": 3,
+      "name": "Wide Base",
+      "world": 1,
+      "targetHeight": 120,
+      "holdDuration": 2.0,
+      "maxBlocks": 12,
+      "blockQueue": [
+        "wood_plank",
+        "wood_rectangle",
+        "wood_square",
+        "wood_rectangle",
+        "wood_square",
+        "wood_rectangle"
+      ],
+      "wind": {
+        "baseStrength": 0,
+        "gustFrequency": 0,
+        "direction": "right"
+      },
+      "tiltSensitivity": 1.0,
+      "platformWidth": 6.0,
+      "parBlocks": 6
+    },
+    {
+      "levelId": 4,
+      "name": "Pillar",
+      "world": 1,
+      "targetHeight": 140,
+      "holdDuration": 2.0,
+      "maxBlocks": 12,
+      "blockQueue": [
+        "wood_square",
+        "wood_square",
+        "wood_rectangle",
+        "wood_square",
+        "wood_rectangle",
+        "wood_square"
+      ],
+      "wind": {
+        "baseStrength": 0,
+        "gustFrequency": 0,
+        "direction": "right"
+      },
+      "tiltSensitivity": 1.0,
+      "platformWidth": 6.0,
+      "parBlocks": 6
+    },
+    {
+      "levelId": 5,
+      "name": "Foundation",
+      "world": 1,
+      "targetHeight": 160,
+      "holdDuration": 2.0,
+      "maxBlocks": 12,
+      "blockQueue": [
+        "wood_plank",
+        "wood_rectangle",
+        "wood_square",
+        "wood_triangle",
+        "wood_rectangle",
+        "wood_square",
+        "wood_rectangle"
+      ],
+      "wind": {
+        "baseStrength": 0,
+        "gustFrequency": 0,
+        "direction": "right"
+      },
+      "tiltSensitivity": 1.0,
+      "platformWidth": 6.0,
+      "parBlocks": 6
+    }
+  ]
+}

@@ -1,0 +1,133 @@
+{
+  "world": 6,
+  "title": "Storm",
+  "levels": [
+    {
+      "levelId": 26,
+      "name": "Storm Front",
+      "world": 6,
+      "targetHeight": 170,
+      "holdDuration": 2.0,
+      "maxBlocks": 12,
+      "blockQueue": [
+        "metal_plank",
+        "wood_rectangle",
+        "rubber_square",
+        "metal_square",
+        "wood_rectangle",
+        "ice_rectangle"
+      ],
+      "wind": {
+        "baseStrength": 0.7,
+        "gustFrequency": 0.35,
+        "direction": "random"
+      },
+      "tiltSensitivity": 1.0,
+      "platformWidth": 5.5,
+      "parBlocks": 6
+    },
+    {
+      "levelId": 27,
+      "name": "Gale",
+      "world": 6,
+      "targetHeight": 185,
+      "holdDuration": 2.0,
+      "maxBlocks": 12,
+      "blockQueue": [
+        "metal_rectangle",
+        "rubber_plank",
+        "wood_square",
+        "metal_square",
+        "ice_triangle",
+        "rubber_rectangle",
+        "wood_rectangle"
+      ],
+      "wind": {
+        "baseStrength": 0.7,
+        "gustFrequency": 0.35,
+        "direction": "random"
+      },
+      "tiltSensitivity": 1.0,
+      "platformWidth": 5.5,
+      "parBlocks": 6
+    },
+    {
+      "levelId": 28,
+      "name": "Hurricane",
+      "world": 6,
+      "targetHeight": 200,
+      "holdDuration": 2.0,
+      "maxBlocks": 12,
+      "blockQueue": [
+        "metal_square",
+        "wood_plank",
+        "rubber_rectangle",
+        "ice_square",
+        "metal_triangle",
+        "wood_rectangle",
+        "rubber_square"
+      ],
+      "wind": {
+        "baseStrength": 0.7,
+        "gustFrequency": 0.35,
+        "direction": "random"
+      },
+      "tiltSensitivity": 1.0,
+      "platformWidth": 5.5,
+      "parBlocks": 6
+    },
+    {
+      "levelId": 29,
+      "name": "Eye",
+      "world": 6,
+      "targetHeight": 215,
+      "holdDuration": 2.0,
+      "maxBlocks": 12,
+      "blockQueue": [
+        "metal_plank",
+        "rubber_square",
+        "wood_rectangle",
+        "metal_rectangle",
+        "ice_plank",
+        "rubber_triangle",
+        "wood_square",
+        "metal_square"
+      ],
+      "wind": {
+        "baseStrength": 0.7,
+        "gustFrequency": 0.35,
+        "direction": "random"
+      },
+      "tiltSensitivity": 1.0,
+      "platformWidth": 5.5,
+      "parBlocks": 7
+    },
+    {
+      "levelId": 30,
+      "name": "Summit",
+      "world": 6,
+      "targetHeight": 230,
+      "holdDuration": 2.0,
+      "maxBlocks": 12,
+      "blockQueue": [
+        "metal_rectangle",
+        "rubber_plank",
+        "wood_square",
+        "metal_square",
+        "ice_rectangle",
+        "rubber_square",
+        "wood_triangle",
+        "metal_rectangle",
+        "rubber_rectangle"
+      ],
+      "wind": {
+        "baseStrength": 0.7,
+        "gustFrequency": 0.35,
+        "direction": "random"
+      },
+      "tiltSensitivity": 1.0,
+      "platformWidth": 5.5,
+      "parBlocks": 12
+    }
+  ]
+}
